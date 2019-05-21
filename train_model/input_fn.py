@@ -1,13 +1,12 @@
 import tensorflow as tf
 from keras.applications.vgg16 import preprocess_input
-# from matplotlib import pyplot as plt
 
 tf.logging.set_verbosity(v=tf.logging.INFO)
 
 HEIGHT = 224
 WIDTH = 224
 NUM_CHANNELS = 3
-NCLASSES = 123
+NCLASSES = 10
 
 
 def read_and_preprocess_with_augment(image_bytes, label=None):
@@ -15,18 +14,33 @@ def read_and_preprocess_with_augment(image_bytes, label=None):
 
 
 def read_and_preprocess(image_bytes, label=None, augment=False):
-    # Decode the image, end up with pixel values that are in the -1, 1 range
+
     image = tf.image.decode_jpeg(contents=image_bytes, channels=NUM_CHANNELS)
     image = tf.image.convert_image_dtype(image=image, dtype=tf.float32)  # 0-1
     image = tf.expand_dims(input=image, axis=0)  # resize_bilinear needs batches
 
     if augment:
+
+        # Resize to slightly larger than target size
         image = tf.image.resize_bilinear(images=image, size=[HEIGHT + 10, WIDTH + 10], align_corners=False)
-        image = tf.squeeze(input=image, axis=0)  # remove batch dimension
+
+        # Image random rotation
+        degree_angle = tf.random.uniform((), minval=-15, maxval=15, dtype=tf.dtypes.float32)
+        radian = degree_angle * 3.14 / 180
+        image = tf.contrib.image.rotate(image, radian, interpolation='NEAREST')
+
+        # remove batch dimension
+        image = tf.squeeze(input=image, axis=0)
+
+        # Random Crop
         image = tf.random_crop(value=image, size=[HEIGHT, WIDTH, NUM_CHANNELS])
+        # Random L-R flip
         image = tf.image.random_flip_left_right(image=image)
+        # Random brightness
         image = tf.image.random_brightness(image=image, max_delta=63.0 / 255.0)
+        # Random contrast
         image = tf.image.random_contrast(image=image, lower=0.2, upper=1.8)
+
     else:
         image = tf.image.resize_bilinear(images=image, size=[HEIGHT, WIDTH], align_corners=False)
         image = tf.squeeze(input=image, axis=0)  # remove batch dimension
@@ -34,11 +48,11 @@ def read_and_preprocess(image_bytes, label=None, augment=False):
     # Pixel values are in range [0,1], convert to [-1,1]
     # image = tf.subtract(x=image, y=0.5)
     # image = tf.multiply(x=image, y=2.0)
-
+    #
     image = tf.cast(tf.round(image * 255), tf.int32)
     image = preprocess_input(image)
 
-    label = tf.one_hot(tf.strings.to_number(label, out_type=tf.int32), depth=10)
+    label = tf.one_hot(tf.strings.to_number(label, out_type=tf.int32), depth=NCLASSES)
 
     return {"input_1": image}, label
 
@@ -76,7 +90,7 @@ def make_input_fn(csv_of_filenames, mode, params, augment=False):
 
         if mode == tf.estimator.ModeKeys.TRAIN:
             num_epochs = None  # indefinitely
-            dataset = dataset.shuffle(buffer_size = 2* params["batch size"])
+            dataset = dataset.shuffle(buffer_size=2*params["batch size"])
         else:
             num_epochs = 1  # end-of-input after this
 
@@ -89,11 +103,13 @@ def make_input_fn(csv_of_filenames, mode, params, augment=False):
 
 test = False
 
-params = {};
-params['batch size'] = 10
-
 if test:
-    a1 = make_input_fn("train_set_local.csv",  tf.estimator.ModeKeys.TRAIN, params, augment=False)
+    from matplotlib import pyplot as plt
+
+    params = {}
+    params['batch size'] = 10
+    params['num parallel calls'] = 4
+    a1 = make_input_fn("C:/Users/Kenneth Kragh Jensen/Google Drive/ML/ElBird\Data_proc/test_set_local.csv",  tf.estimator.ModeKeys.TRAIN, params, augment=True)
     b, c = a1()
 
 
@@ -110,9 +126,9 @@ if test:
 
             imgs, labls = sess.run(a1())
 
-            labels = labels_table_2.lookup(keys=tf.constant(labls))
-            l = tf.one_hot(indices=labels, depth=NCLASSES)
-            l2 = l.eval()
+            # labels = labels_table_2.lookup(keys=tf.constant(labls))
+            # l = tf.one_hot(indices=labels, depth=NCLASSES)
+            # l2 = l.eval()
 
             for i in range(10):
                 plt.imshow(imgs['input_1'][i, :, :, :])

@@ -34,10 +34,10 @@ if __name__ == '__main__':
         default=10
     )
     parser.add_argument(
-        '--train_examples',
-        help='Number of examples (in thousands) to run the training job over. If this is more than actual # of examples available, it cycles through them. So specifying 1000 here when you have only 100k examples makes this 10 epochs.',
+        '--train_steps',
+        help='Number of steps to train',
         type=int,
-        default=5000
+        default=None  # None = indefinately
     )
     parser.add_argument(
         '--eval_steps',
@@ -113,13 +113,12 @@ if __name__ == '__main__':
     params['output path'] = arguments.pop('output_dir')
     params['data path'] = arguments.pop('datapath')
     params['image size'] = [244, 224]
-    params['num parallel calls'] = 4
     params["batch size"] = arguments.pop('batch_size')
     params['use random flip'] = True
     params['learning rate'] = arguments.pop('learning_rate')
     params['dropout rate'] = arguments.pop('dropout_rate')
     params['num classes'] = arguments.pop('num_classes')
-    params['train steps'] = int((arguments.pop('train_examples') * 1000) / params["batch size"])
+    params['train steps'] = arguments.pop('train_steps')
     params['eval steps'] = arguments.pop('eval_steps')
     params['eval_throttle_secs'] = arguments.pop('eval_throttle_secs')
     params['isRunOnCloud'] = arguments.pop('run_on_cloud')

@@ -98,8 +98,8 @@ def go_train(params):
 
     # Set up Estimator train and evaluation specifications
     train_spec = tf.estimator.TrainSpec(
-        input_fn=make_input_fn(params['train csv'], tf.estimator.ModeKeys.TRAIN, params, augment=True)
-        # lambda: input_fn(data['train_images'], data['train_labels'], params, True)
+        input_fn=make_input_fn(params['train csv'], tf.estimator.ModeKeys.TRAIN, params, augment=True),
+        max_steps=params['train steps']
     )
     eval_spec = tf.estimator.EvalSpec(
         input_fn=make_input_fn(params['eval csv'], tf.estimator.ModeKeys.EVAL, params, augment=True),
