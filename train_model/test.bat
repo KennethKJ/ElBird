@@ -1,1 +1,2 @@
-C:\ProgramData\Anaconda3\envs\ML\python.exe "C:\Users\Kenneth Kragh Jensen\Google Drive\ML\EB\train_model\task.py" --batch_size 10
+C:\Users\alert\Anaconda3\envs\DNN\python.exe "D:\Google Drive\ML\ElBird\train_model\task.py" --batch_size 10
+pause

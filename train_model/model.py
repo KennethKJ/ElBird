@@ -1,10 +1,11 @@
-import tensorflow.keras.estimator as kes
-from tensorflow.keras.applications.vgg16 import VGG16
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Dropout, Flatten, Dense
+import tensorflow as tf
+
+from tensorflow.python.keras import estimator as kes
+from tensorflow.python.keras.applications.vgg16 import VGG16
+from tensorflow.python.keras.models import Model
+from tensorflow.python.keras.layers import Dropout, Flatten, Dense
 from train_model.input_fn import make_input_fn
 
-import tensorflow as tf
 # from train_model import data_retrieval as dr
 import os
 
@@ -25,7 +26,7 @@ def create_estimator(params):
     for layer in model.layers:
         layer.trainable = False
 
-    for layer in model.layers[15: 23]:
+    for layer in model.layers[10: 23]:
         layer.trainable = True
 
     model.summary()
@@ -46,21 +47,26 @@ def create_estimator(params):
     else:
 
         # Set up training config according to Intel recommendations
-        NUM_PARALLEL_EXEC_UNITS = 4
-        session_config = tf.ConfigProto(
-            intra_op_parallelism_threads=NUM_PARALLEL_EXEC_UNITS,
-            inter_op_parallelism_threads=2,
-            allow_soft_placement=True,
-            device_count={'CPU': NUM_PARALLEL_EXEC_UNITS}
-        )
+        # NUM_PARALLEL_EXEC_UNITS = 4
+        # session_config = tf.ConfigProto(
+        #     intra_op_parallelism_threads=NUM_PARALLEL_EXEC_UNITS,
+        #     inter_op_parallelism_threads=2,
+        #     allow_soft_placement=True,
+        #     device_count={'CPU': NUM_PARALLEL_EXEC_UNITS}
+        # )
+        #
+        # os.environ["OMP_NUM_THREADS"] = "4"
+        # os.environ["KMP_BLOCKTIME"] = "30"
+        # os.environ["KMP_SETTINGS"] = "1"
+        # os.environ["KMP_AFFINITY"] = "granularity=fine,verbose,compact,1,0"
 
-        os.environ["OMP_NUM_THREADS"] = "4"
-        os.environ["KMP_BLOCKTIME"] = "30"
-        os.environ["KMP_SETTINGS"] = "1"
-        os.environ["KMP_AFFINITY"] = "granularity=fine,verbose,compact,1,0"
+        config = tf.ConfigProto()
+        config.gpu_options.allow_growth = True
+        config.gpu_options.per_process_gpu_memory_fraction = 0.95
+        # session_config = tf.contrib.learn.RunConfig(session_config=config)
 
         run_config = tf.estimator.RunConfig(
-            session_config=session_config,
+            session_config=config,
             model_dir=params['output path']
         )
 

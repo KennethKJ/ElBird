@@ -2,7 +2,7 @@
 import os
 import numpy as np
 # Define paths
-dB_path = "D:/ML/Databases/Birds_dB/Images/"
+dB_path = "D:/Google Drive/ML/Databases/Birds_dB/Images/"
 bucket_path = "/electric-birder-71281-bird-db/Birds_dB/Images/"
 bucket_path = dB_path
 
@@ -10,12 +10,11 @@ bucket_path = dB_path
 
 file_list = []
 label_list = []
-
-filename_classes = "D:/ML/Databases/Birds_dB/Mappings/minimal_bird_list.txt"
+filename_classes = "D:/Google Drive/ML/Databases/Birds_dB/Mappings/minimal_bird_list.txt"
 LIST_OF_CLASSES = [line.strip() for line in open(filename_classes, 'r')]
 
 
-f = open('D:/ML/Databases/Birds_dB/Mappings/classes.txt', 'w')
+f = open('D:/Google Drive/ML/Databases/Birds_dB/Mappings/classes.txt', 'w')
 
 num_classes = 0
 for i in range(len(LIST_OF_CLASSES)):
