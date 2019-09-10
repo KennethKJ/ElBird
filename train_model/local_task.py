@@ -110,26 +110,30 @@ if __name__ == '__main__':
     params = {}
     params['train csv'] = "D:/Google Drive/ML/ElBird/Data_proc/train_set_local.csv"
     params['eval csv'] = "D:/Google Drive/ML/ElBird/Data_proc/eval_set_local.csv"
-    params['output path'] = "D:/Google Drive/ML/EstimatorOutput/3/"
+    params['output path'] = "C:/EstimatorOutput/4/"
     params['data path'] = "D:/Google Drive/ML/Databases/Birds_dB/Images"
     params['image size'] = [244, 224]
     params["batch size"] = 16
     params['use random flip'] = True
-    params['learning rate'] = 0.00001
-    params['dropout rate'] = 0.5
-    params['num classes'] = 10
-    params['train steps'] = 10000
-    params['eval steps'] = 10
-    params['eval_throttle_secs'] = 300
+    params['learning rate'] = 0.000000000002 #0.00001
+    params['dropout rate'] = 0.50
+    params['num classes'] = 123
+    params['train steps'] = 65000
+    params['eval steps'] = 20
+    params['eval_throttle_secs'] = 600
     params['isRunOnCloud'] = False
     params['num parallel calls'] = 4
 
     print("Hi, this is task.py talking")
     print("Will train for {} steps using batch_size={}".format(params['train steps'], params['batch size']))
+    print("********************************")
     print("PARAMETER SETTINGS:")
     for key, value in params.items():
         print(key + ": " + str(value))
+    print("********************************")
 
     # Run the training job
 
     model.go_train(params)
+
+    print("Done!")

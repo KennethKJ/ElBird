@@ -6,7 +6,7 @@ tf.logging.set_verbosity(v=tf.logging.INFO)
 HEIGHT = 224
 WIDTH = 224
 NUM_CHANNELS = 3
-NCLASSES = 10
+NCLASSES = 123
 
 
 def read_and_preprocess_with_augment(image_bytes, label=None):
@@ -22,10 +22,10 @@ def read_and_preprocess(image_bytes, label=None, augment=False):
     if augment:
 
         # Resize to slightly larger than target size
-        image = tf.image.resize_bilinear(images=image, size=[HEIGHT + 10, WIDTH + 10], align_corners=False)
+        image = tf.image.resize_bilinear(images=image, size=[HEIGHT + 50, WIDTH + 50], align_corners=False)
 
         # Image random rotation
-        degree_angle = tf.random.uniform((), minval=-15, maxval=15, dtype=tf.dtypes.float32)
+        degree_angle = tf.random.uniform((), minval=-25, maxval=25, dtype=tf.dtypes.float32)
         radian = degree_angle * 3.14 / 180
         image = tf.contrib.image.rotate(image, radian, interpolation='NEAREST')
 
@@ -90,11 +90,11 @@ def make_input_fn(csv_of_filenames, mode, params, augment=False):
 
         if mode == tf.estimator.ModeKeys.TRAIN:
             num_epochs = None  # indefinitely
-            dataset = dataset.shuffle(buffer_size=2*params["batch size"])
+            dataset = dataset.shuffle(buffer_size=10*params["batch size"])
         else:
             num_epochs = 1  # end-of-input after this
 
-        dataset = dataset.repeat(count=num_epochs).batch(batch_size=params["batch size"]).prefetch(2)
+        dataset = dataset.repeat(count=num_epochs).batch(batch_size=params["batch size"]).prefetch(4)
         images, labels = dataset.make_one_shot_iterator().get_next()
 
         return images, labels

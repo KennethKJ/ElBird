@@ -10,7 +10,7 @@ bucket_path = dB_path
 
 file_list = []
 label_list = []
-filename_classes = "D:/Google Drive/ML/Databases/Birds_dB/Mappings/minimal_bird_list.txt"
+filename_classes = "D:/Google Drive/ML/Databases/Birds_dB/Mappings/full_bird_list.txt"
 LIST_OF_CLASSES = [line.strip() for line in open(filename_classes, 'r')]
 
 

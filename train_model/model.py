@@ -19,24 +19,24 @@ def create_estimator(params):
 
     x = Dropout(params['dropout rate'])(x)
 
-    predictions = Dense(params['num classes'], activation="softmax", name="sm_out")(x)
+    predictions = Dense(params['num classes'], activation="sigmoid", name="sm_out")(x)
 
     model = Model(inputs=base_model.input, outputs=predictions)
 
     for layer in model.layers:
         layer.trainable = False
 
-    for layer in model.layers[10: 23]:
+    for layer in model.layers[0: 23]:
         layer.trainable = True
 
     model.summary()
 
     model.compile(
-        loss="categorical_crossentropy",
+        loss="binary_crossentropy",
         optimizer=tf.train.AdamOptimizer(params['learning rate'],
                                          beta1=0.9,
                                          beta2=0.999),
-        metrics=["accuracy"]
+        metrics=["categorical_accuracy"]
     )
 
     if params['isRunOnCloud']:
@@ -81,14 +81,14 @@ def create_estimator(params):
 
 
 # Functions for custom metrics
-def precision(labels, predictions):
-    prec = tf.metrics.precision(predictions['sm_out'], labels)
-    return {'Precision': prec}
-
-
-def recall(labels, predictions):
-    reca = tf.metrics.recall(predictions['sm_out'], labels)
-    return {'Recall': reca}
+# def precision(labels, predictions):
+#     prec = tf.metrics.precision(predictions['sm_out'], labels)
+#     return {'Precision': prec}
+#
+#
+# def recall(labels, predictions):
+#     reca = tf.metrics.recall(predictions['sm_out'], labels)
+#     return {'Recall': reca}
 
 
 def go_train(params):
@@ -96,8 +96,8 @@ def go_train(params):
     Est = create_estimator(params)
 
     # Add custom metrics
-    Est = tf.contrib.estimator.add_metrics(Est, precision)
-    Est = tf.contrib.estimator.add_metrics(Est, recall)
+    # Est = tf.contrib.estimator.add_metrics(Est, precision)
+    # Est = tf.contrib.estimator.add_metrics(Est, recall)
 
     # Get the data (in form of dictionary)
     # data = dr.get_data(params)
@@ -116,8 +116,10 @@ def go_train(params):
     # Set logging level
     tf.logging.set_verbosity(tf.logging.DEBUG)
 
+    print("Starting training and evaluation ...")
     # Run training and evaluation
     tf.estimator.train_and_evaluate(Est, train_spec, eval_spec)
+    print("Training and evaluation round is done")
 
 
 def go_predict(params):
