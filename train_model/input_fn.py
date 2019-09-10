@@ -137,3 +137,19 @@ if test:
                 print("Done")
 
         print("Done")
+
+
+
+def get_image(filename):
+    image_bytes = tf.read_file(filename=filename)
+    image = tf.image.decode_jpeg(contents=image_bytes, channels=3)
+    image = tf.image.convert_image_dtype(image=image, dtype=tf.float32)  # 0-1
+    image = tf.expand_dims(input=image, axis=0)  # resize_bilinear needs batches
+
+    image = tf.image.resize_bilinear(images=image, size=[HEIGHT, WIDTH], align_corners=False)
+    image = tf.squeeze(input=image, axis=0)  # remove batch dimension
+
+    image = tf.cast(tf.round(image * 255), tf.int32)
+    image = preprocess_input(image)
+
+    return image
