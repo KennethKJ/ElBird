@@ -7,6 +7,10 @@ from train_model.input_fn import get_image
 from tensorflow.contrib import predictor
 import numpy as np
 import os
+from matplotlib import pyplot as plt
+from PIL import Image
+
+
 # Throw properties into params dict to pass to other functions
 params = {}
 params['train csv'] = "D:/Google Drive/ML/ElBird/Data_proc/train_set_local.csv"
@@ -42,7 +46,7 @@ if save_model:
 
     Est = create_estimator(params)
 
-    export_dir = "C:/EstimatorOutput/7/saved model/"
+    export_dir = "C:/EstimatorOutput/3/saved model/"
 
     Est.export_savedmodel(export_dir, serving_input_fn)
 
@@ -65,7 +69,7 @@ with tf.Session() as sess:
     a = tf.expand_dims(a, 0)
 
     # Where to get saved model from
-    model_dir = "C:/EstimatorOutput/7/saved model/1568137849/"
+    model_dir = "C:/EstimatorOutput/3/saved model/1568150988/"
 
     # Define prediction function
     predict_fn = predictor.from_saved_model(model_dir)
@@ -73,14 +77,33 @@ with tf.Session() as sess:
     # RUN AND HAVE FUN!
     filename = "C:/Users/alert/Google Drive/ML/Databases/Birds_dB/Images/american_crow/Ex1.jpg"
 
+    doBooth = True
+
     for i in range(100):
 
-        true_bird = classes[np.random.randint(0, 122)]
-        example = np.random.randint(1, 50)
-        f = "C:/Users/alert/Google Drive/ML/Databases/Birds_dB/Images/" \
-            + true_bird + "/Ex" + str(example) + ".jpg"
-        Y = predict_fn({'input_1': sess.run(a, feed_dict={s: f})})['sm_out']
+        if doBooth:
+
+            dB_loc = "C:/Users/alert/Google Drive/ML/Databases/Photo Booth User Group Photos/(2) Bird Photo Booth Users Group_files/"
+
+            pics = [item for item in os.listdir(dB_loc)]
+
+            f = dB_loc + pics[i]
+        else:
+            f = "C:/Users/alert/Google Drive/ML/Databases/Birds_dB/Images/" + \
+                classes[np.random.randint(0, 122)] + "/Ex" + str(np.random.randint(1, 10)) + ".jpg"
+
+        a_np = sess.run(a, feed_dict={s: f})
+
+        Y = predict_fn({'input_1': a_np})['sm_out']
 
         pred = np.argmax(Y)
 
-        print("True bird = " + true_bird + " | Pred bird = " + classes[pred])
+        im = Image.open(f)
+
+        fig, ax = plt.subplots()
+
+        ax.imshow(im)
+        plt.title(classes[pred])
+        plt.show()
+        print(classes[pred])
+

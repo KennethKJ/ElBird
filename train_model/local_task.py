@@ -1,5 +1,14 @@
 import argparse
 from train_model import model
+from tensorflow.python.estimator.export import export as ex
+import tensorflow as tf
+from train_model.model import create_estimator
+from train_model.input_fn import get_image
+from tensorflow.contrib import predictor
+import numpy as np
+import os
+from matplotlib import pyplot as plt
+from PIL import Image
 
 if __name__ == '__main__':
     # parser = argparse.ArgumentParser()
@@ -105,13 +114,13 @@ if __name__ == '__main__':
     # #         os.environ.get('TF_CONFIG', '{}')
     # #     ).get('task', {}).get('trial', '')
     # # )
-
+    model_num = 10;
     # Throw properties into params dict to pass to other functions
     params = {}
-    params['train csv'] = "D:/Google Drive/ML/ElBird/Data_proc/train_set_local.csv"
-    params['eval csv'] = "D:/Google Drive/ML/ElBird/Data_proc/eval_set_local.csv"
-    params['output path'] = "C:/EstimatorOutput/4/"
-    params['data path'] = "D:/Google Drive/ML/Databases/Birds_dB/Images"
+    params['train csv'] = "C:/Users/alert/Google Drive/ML/ElBird/Data_proc/train_set_local.csv"
+    params['eval csv'] = "C:/Users/alert/Google Drive/ML/ElBird/Data_proc/eval_set_local.csv"
+    params['output path'] = "C:/EstimatorOutput/" + str(model_num) + "/"
+    params['data path'] = "C:/Users/alert/Google Drive/ML/Databases/Birds_dB/Images"
     params['image size'] = [244, 224]
     params["batch size"] = 16
     params['use random flip'] = True
@@ -136,4 +145,19 @@ if __name__ == '__main__':
 
     model.go_train(params)
 
-    print("Done!")
+    print("Done training!")
+
+    save_model = False
+
+    if save_model:
+        feature_spec = {'input_1': tf.placeholder(shape=[None, 224, 224, 3], dtype=tf.int32)}
+        serving_input_fn = ex.build_raw_serving_input_receiver_fn(feature_spec)
+
+        Est = create_estimator(params)
+
+        export_dir = "C:/EstimatorOutput/" + str(model_num) + "/saved model/"
+
+        Est.export_savedmodel(export_dir, serving_input_fn)
+
+    print("Model saved")
+

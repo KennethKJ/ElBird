@@ -14,11 +14,11 @@ import seaborn as sn
 import os
 
 params = {}
-params['test csv'] = "D:/Google Drive/ML/ElBird/Data_proc/test_set_local.csv"
+params['test csv'] = "C:/Users/alert/Google Drive/ML/ElBird/Data_proc/test_set_local.csv"
 #     params['train csv'] = arguments.pop('train_csv')
 #     params['eval csv'] = arguments.pop('eval_csv')
-params['output path'] = "C:/EstimatorOutput/3/"
-params['data path'] = "D:/Google Drive/ML/Databases/Birds_dB/Images"
+params['output path'] = "C:/EstimatorOutput/7/"
+params['data path'] = "C:/Users/alert/Google Drive/ML/Databases/Birds_dB/Images"
 params['image size'] = [244, 224]
 params['num parallel calls'] = 4
 params["batch size"] = 16
@@ -53,7 +53,7 @@ print(df.iloc[0, 0])
 
 # print("******* Predictions: ************")
 
-GD_path = "D:/Google Drive/"
+GD_path = "C:/Users/alert/Google Drive/"
 DB_path = "/ML/Databases/Birds_dB/Images/"
 
 classes = [item for item in os.listdir(GD_path + DB_path)]
