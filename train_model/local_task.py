@@ -114,7 +114,7 @@ if __name__ == '__main__':
     # #         os.environ.get('TF_CONFIG', '{}')
     # #     ).get('task', {}).get('trial', '')
     # # )
-    model_num = 10;
+    model_num = 13
     # Throw properties into params dict to pass to other functions
     params = {}
     params['train csv'] = "C:/Users/alert/Google Drive/ML/ElBird/Data_proc/train_set_local.csv"
@@ -122,9 +122,9 @@ if __name__ == '__main__':
     params['output path'] = "C:/EstimatorOutput/" + str(model_num) + "/"
     params['data path'] = "C:/Users/alert/Google Drive/ML/Databases/Birds_dB/Images"
     params['image size'] = [244, 224]
-    params["batch size"] = 16
+    params["batch size"] = 16*2
     params['use random flip'] = True
-    params['learning rate'] = 0.000000000002 #0.00001
+    params['learning rate'] = 0.000001  # 0.000000000002 #
     params['dropout rate'] = 0.50
     params['num classes'] = 123
     params['train steps'] = 65000
@@ -159,5 +159,5 @@ if __name__ == '__main__':
 
         Est.export_savedmodel(export_dir, serving_input_fn)
 
-    print("Model saved")
+        print("Model saved")
 
