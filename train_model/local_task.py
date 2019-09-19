@@ -3,12 +3,12 @@ from train_model import model
 from tensorflow.python.estimator.export import export as ex
 import tensorflow as tf
 from train_model.model import create_estimator
-from train_model.input_fn import get_image
-from tensorflow.contrib import predictor
-import numpy as np
+# from train_model.input_fn import get_image
+# from tensorflow.contrib import predictor
+# import numpy as np
 import os
-from matplotlib import pyplot as plt
-from PIL import Image
+# from matplotlib import pyplot as plt
+# from PIL import Image
 
 if __name__ == '__main__':
     # parser = argparse.ArgumentParser()
@@ -114,7 +114,7 @@ if __name__ == '__main__':
     # #         os.environ.get('TF_CONFIG', '{}')
     # #     ).get('task', {}).get('trial', '')
     # # )
-    model_num = 13
+    model_num = 10
     # Throw properties into params dict to pass to other functions
     params = {}
     params['train csv'] = "C:/Users/alert/Google Drive/ML/ElBird/Data_proc/train_set_local.csv"

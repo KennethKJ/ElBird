@@ -1,13 +1,9 @@
 import tensorflow as tf
-
 from tensorflow.python.keras import estimator as kes
 from tensorflow.python.keras.applications.vgg16 import VGG16
 from tensorflow.python.keras.models import Model
 from tensorflow.python.keras.layers import Dropout, Flatten, Dense
 from train_model.input_fn import make_input_fn
-
-# from train_model import data_retrieval as dr
-import os
 
 
 def create_estimator(params):
@@ -46,20 +42,6 @@ def create_estimator(params):
         )
     else:
 
-        # Set up training config according to Intel recommendations
-        # NUM_PARALLEL_EXEC_UNITS = 4
-        # session_config = tf.ConfigProto(
-        #     intra_op_parallelism_threads=NUM_PARALLEL_EXEC_UNITS,
-        #     inter_op_parallelism_threads=2,
-        #     allow_soft_placement=True,
-        #     device_count={'CPU': NUM_PARALLEL_EXEC_UNITS}
-        # )
-        #
-        # os.environ["OMP_NUM_THREADS"] = "4"
-        # os.environ["KMP_BLOCKTIME"] = "30"
-        # os.environ["KMP_SETTINGS"] = "1"
-        # os.environ["KMP_AFFINITY"] = "granularity=fine,verbose,compact,1,0"
-
         config = tf.ConfigProto()
         config.gpu_options.allow_growth = True
         config.gpu_options.per_process_gpu_memory_fraction = 0.95
@@ -70,8 +52,7 @@ def create_estimator(params):
             model_dir=params['output path']
         )
 
-    # Convert to Estimator (https://cloud.google.com/blog/products/gcp/
-    # new-in-tensorflow-14-converting-a-keras-model-to-a-tensorflow-estimator)
+    # Convert to Estimator (https://cloud.google.com/blog/products/gcp/new-in-tensorflow-14-converting-a-keras-model-to-a-tensorflow-estimator)
     estimator_model = kes.model_to_estimator(
         keras_model=model,
         config=run_config
@@ -80,27 +61,9 @@ def create_estimator(params):
     return estimator_model
 
 
-# Functions for custom metrics
-# def precision(labels, predictions):
-#     prec = tf.metrics.precision(predictions['sm_out'], labels)
-#     return {'Precision': prec}
-#
-#
-# def recall(labels, predictions):
-#     reca = tf.metrics.recall(predictions['sm_out'], labels)
-#     return {'Recall': reca}
-
-
 def go_train(params):
     # Create the estimator
     Est = create_estimator(params)
-
-    # Add custom metrics
-    # Est = tf.contrib.estimator.add_metrics(Est, precision)
-    # Est = tf.contrib.estimator.add_metrics(Est, recall)
-
-    # Get the data (in form of dictionary)
-    # data = dr.get_data(params)
 
     # Set up Estimator train and evaluation specifications
     train_spec = tf.estimator.TrainSpec(
@@ -109,7 +72,7 @@ def go_train(params):
     )
     eval_spec = tf.estimator.EvalSpec(
         input_fn=make_input_fn(params['eval csv'], tf.estimator.ModeKeys.EVAL, params, augment=True),
-        steps=params['eval steps'],  # Evaluates on 10 batches
+        steps=params['eval steps'],  # Evaluates on "eval steps" batches
         throttle_secs=params['eval_throttle_secs']
     )
 
@@ -117,8 +80,10 @@ def go_train(params):
     tf.logging.set_verbosity(tf.logging.DEBUG)
 
     print("Starting training and evaluation ...")
+
     # Run training and evaluation
     tf.estimator.train_and_evaluate(Est, train_spec, eval_spec)
+
     print("Training and evaluation round is done")
 
 

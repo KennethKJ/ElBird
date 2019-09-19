@@ -57,22 +57,6 @@ def read_and_preprocess(image_bytes, label=None, augment=False):
     return {"input_1": image}, label
 
 
-# def convert_labels(labels):
-#
-#     table_init = tf.tables_initializer()
-#
-#     filename_classes = "D:/ML/Databases/Birds_dB/Mappings/classes.txt"
-#     LIST_OF_LABELS = [line.strip() for line in open(filename_classes, 'r')]
-#
-#     labels_table = tf.contrib.lookup.index_table_from_tensor(
-#         mapping=tf.constant(value=LIST_OF_LABELS, dtype=tf.string))
-#
-#     labels = labels_table.lookup(labels)
-#     labels = tf.one_hot(indices=labels, depth=NCLASSES)
-#
-#     return labels
-
-
 def make_input_fn(csv_of_filenames, mode, params, augment=False):
     def _input_fn():
         def decode_csv(csv_row):
@@ -125,10 +109,6 @@ if test:
         while 1 == 1:
 
             imgs, labls = sess.run(a1())
-
-            # labels = labels_table_2.lookup(keys=tf.constant(labls))
-            # l = tf.one_hot(indices=labels, depth=NCLASSES)
-            # l2 = l.eval()
 
             for i in range(10):
                 plt.imshow(imgs['input_1'][i, :, :, :])
